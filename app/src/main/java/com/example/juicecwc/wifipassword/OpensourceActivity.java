@@ -19,6 +19,7 @@ public class OpensourceActivity extends AppCompatActivity implements View.OnClic
     private LinearLayout layout_1;
     private LinearLayout layout_2;
     private LinearLayout layout_3;
+    private LinearLayout layout_my;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,10 +29,12 @@ public class OpensourceActivity extends AppCompatActivity implements View.OnClic
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         layout_1 = (LinearLayout)findViewById(R.id.reference_1);
         layout_2 = (LinearLayout)findViewById(R.id.reference_2);
-        layout_3 = (LinearLayout)findViewById(R.id.myproject);
+        layout_3 = (LinearLayout)findViewById(R.id.reference_3);
+        layout_my = (LinearLayout)findViewById(R.id.myproject);
         layout_1.setOnClickListener(this);
         layout_2.setOnClickListener(this);
         layout_3.setOnClickListener(this);
+        layout_my.setOnClickListener(this);
     }
 
     @Override
@@ -51,12 +54,19 @@ public class OpensourceActivity extends AppCompatActivity implements View.OnClic
                 intent2.setData(uri2);
                 startActivity(intent2);
                 break;
-            case R.id.myproject:
-                Uri uri3 = Uri.parse("" + getString(R.string.myprojecturl));
+            case R.id.reference_3:
+                Uri uri3 = Uri.parse("" + getString(R.string.reference3url));
                 Intent intent3 = new Intent();
                 intent3.setAction(Intent.ACTION_VIEW);
                 intent3.setData(uri3);
                 startActivity(intent3);
+                break;
+            case R.id.myproject:
+                Uri uri_my = Uri.parse("" + getString(R.string.myprojecturl));
+                Intent intent_my = new Intent();
+                intent_my.setAction(Intent.ACTION_VIEW);
+                intent_my.setData(uri_my);
+                startActivity(intent_my);
                 break;
         }
     }

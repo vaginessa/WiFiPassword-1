@@ -69,6 +69,11 @@ public class MainActivity extends AppCompatActivity {
                 wifi_click = showList.get(i);
             }
         });
+
+        dataList = new ArrayList<>();
+        noPskList = new ArrayList<>();
+        pskList = new ArrayList<>();
+        showList = new ArrayList<>();
         doWork();
 
     }
@@ -81,10 +86,6 @@ public class MainActivity extends AppCompatActivity {
             Process process = null;
             DataOutputStream outputStream = null;
             DataInputStream inputStream = null;
-            dataList = new ArrayList<>();
-            noPskList = new ArrayList<>();
-            pskList = new ArrayList<>();
-            showList = new ArrayList<>();
             StringBuffer sBuffer = new StringBuffer();
             String out = null;
 

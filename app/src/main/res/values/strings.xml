@@ -23,6 +23,8 @@
     <string name="reference1url">https://github.com/cfm1120/seepwd</string>
     <string name="reference2">SeeWifiPwd</string>
     <string name="reference2url">https://github.com/wang4yu6peng13/SeeWifiPwd</string>
+    <string name="reference3">android-utils</string>
+    <string name="reference3url">https://github.com/Wing-Li/android-utils</string>
     <string name="myproject">WiFiPassword</string>
     <string name="myprojecturl">https://github.com/juicecwc/WiFiPassword</string>
     <string name="mailaddress">juicecwc@gmail.com</string>
@@ -34,7 +36,7 @@
             本应用作者为一名闲得蛋疼的准大三学生，暑假初学Android做了这个应用练手，望大神们轻喷。\n
             此类应用的原理很简单，基本上都是读取系统目录 \"/data/misc/wifi/*.conf\" 中保存的WiFi密码，因此root权限是必须获取的。
         本应用除了获取root权限以及sd卡读写权限之外没有获取任何其他权限，无广告、不盈利，如果您不放心，只好建议您卸载。\n
-            本应用参照了 cfm1120 的开源项目 seepwd ，wang4yu6peng13的开源项目 SeeWifiPwd ，同时本项目也开源，项目地址见菜单“开源项目”。\n\n
+            本应用参照了 cfm1120 的开源项目 seepwd ，wang4yu6peng13的开源项目 SeeWifiPwd ，Wing-Li 的开源方法检查 root 权限，同时本项目也开源，项目地址见菜单“开源项目”。\n\n
         Tips：\n
         ◎手动删除的 Wifi 无法获取。\n
         ◎单击列表里的 Wifi 名称和密码可以复制。\n
