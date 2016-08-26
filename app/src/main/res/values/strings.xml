@@ -10,6 +10,7 @@
     <string name="noname">Sorry, Cannot get WiFi name =_=</string>
     <string name="nopassword">无密码</string>
     <string name="settingshow">显示无密码的WiFi</string>
+    <string name="settingshownoname">显示名称乱码的WiFi</string>
     <string name="settingsortup">按WiFi名升序排列</string>
     <string name="settingsortdown">按WiFi名降序排列</string>
     <string name="settingtitle">显示设置</string>

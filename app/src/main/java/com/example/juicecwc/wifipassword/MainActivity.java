@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private List<WiFi> pskList;
     private List<WiFi> showList;
     private List<WiFi> dataList;
+    private List<WiFi> noNameList;
     private WiFi wifi_click;
     private WiFiAdapter mWiFiAdapter;
     private Context mContext = MainActivity.this;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         noPskList = new ArrayList<>();
         pskList = new ArrayList<>();
         showList = new ArrayList<>();
+        noNameList = new ArrayList<>();
         doWork();
 
     }
@@ -137,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
                 for (WiFi wifi : dataList) {
                     if (wifi.getPassword() == null) {
                         noPskList.add(wifi);
+                    } else if (wifi.getName() == "Sorry, Cannot get WiFi name =_=") {
+                        noNameList.add(wifi);
                     } else {
                         pskList.add(wifi);
                     }
@@ -241,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
         int sort = sharedPreferences.getInt("sort", 0);
         pskList.clear();
         for (WiFi wiFi : dataList) {
-            if (noPskList.contains(wiFi))
+            if (noPskList.contains(wiFi) || noNameList.contains(wiFi))
                 continue;
             pskList.add(wiFi);
         }
@@ -257,6 +261,11 @@ public class MainActivity extends AppCompatActivity {
             //Log.d("TAG", "sort down");
         }
         showList = pskList;
+
+        boolean flag_show_noname = sharedPreferences.getBoolean("show_noname", false);
+        if (flag_show_noname == true)
+            showList.addAll(noNameList);
+
         boolean flag_show = sharedPreferences.getBoolean("show", false);
         if (flag_show == true) {
             showList.addAll(noPskList);

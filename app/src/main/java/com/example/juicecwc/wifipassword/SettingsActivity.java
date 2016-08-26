@@ -26,11 +26,13 @@ public class SettingsActivity extends AppCompatActivity {
     private RadioButton btn_up;
     private RadioButton btn_down;
     private CheckBox btn_show;
+    private CheckBox btn_show_noname;
     private Context mContext;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private int btn = 0;
     private boolean check = false;
+    private boolean check_name = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,6 +48,7 @@ public class SettingsActivity extends AppCompatActivity {
                 Context.MODE_PRIVATE);
         radioGroup = (RadioGroup)findViewById(R.id.setting_sort);
         btn_show = (CheckBox) findViewById(R.id.setting_show);
+        btn_show_noname = (CheckBox)findViewById(R.id.setting_show_noname);
         btn_up = (RadioButton)findViewById(R.id.setting_sort_up);
         btn_down = (RadioButton)findViewById(R.id.setting_sort_down);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -65,6 +68,13 @@ public class SettingsActivity extends AppCompatActivity {
                 check = b;
             }
         });
+
+        btn_show_noname.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                check_name = b;
+            }
+        });
     }
 
     @Override
@@ -73,6 +83,7 @@ public class SettingsActivity extends AppCompatActivity {
         editor = sharedPreferences.edit();
         editor.putInt("sort", btn);
         editor.putBoolean("show", check);
+        editor.putBoolean("show_noname", check_name);
         editor.commit();
     }
 
@@ -85,6 +96,7 @@ public class SettingsActivity extends AppCompatActivity {
         else if (choose == 2)
             btn_down.setChecked(true);
         btn_show.setChecked(sharedPreferences.getBoolean("show", false));
+        btn_show_noname.setChecked(sharedPreferences.getBoolean("show_noname", false));
     }
 
     //返回按钮
