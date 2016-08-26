@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">WiFi密码查看器</string>
+    <string name="noroot">抱歉，未取得root授权，本软件功能无法正常使用</string>
+    <string name="nowifi">抱歉，未找到WiFi密码信息</string>
+    <string name="settings">设置</string>
+    <string name="about">关于</string>
+    <string name="copyall">复制WiFi名称与密码</string>
+    <string name="copypassword">复制WiFi密码</string>
+    <string name="copyname">复制WiFi名称</string>
+    <string name="nopassword">无密码</string>
+    <string name="settingshow">显示无密码的WiFi</string>
+    <string name="settingsortup">按WiFi名升序排列</string>
+    <string name="settingsortdown">按WiFi名降序排列</string>
+    <string name="settingtitle">显示设置</string>
+    <string name="settingtitle1">列表排序</string>
+    <string name="introduction">软件说明</string>
+    <string name="opensource">开源项目</string>
+    <string name="feedback">邮件反馈</string>
+    <string name="rate">给应用评价</string>
+    <string name="share">分享给朋友</string>
+    <string name="donate">打赏开发者</string>
+    <string name="reference1">seepwd</string>
+    <string name="reference1url">https://github.com/cfm1120/seepwd</string>
+    <string name="reference2">SeeWifiPwd</string>
+    <string name="reference2url">https://github.com/wang4yu6peng13/SeeWifiPwd</string>
+    <string name="mailaddress">juicecwc@gmail.com</string>
+    <string name="downloadsite">http://pan.baidu.com/s/1nuIbSzZ</string>
+
+    <string name="introduction_content">
+            本应用作者为一名闲得蛋疼的准大三学生，暑假初学Android做了这个应用练手，望大神们轻喷。\n
+            此类应用的原理很简单，基本上都是读取系统目录 \"/data/misc/wifi/*.conf\" 中保存的WiFi密码，因此root权限是必须获取的。
+        本应用除了获取root权限以及sd卡读写权限之外没有获取任何其他权限，无广告、不盈利，如果您不放心，只好建议您卸载。\n
+            本应用参照了 cfm1120 的开源项目 seepwd ，wang4yu6peng13的开源项目 SeeWifiPwd ，同时本项目也开源，项目地址可以在菜单中找到。\n\n
+        Tips：\n
+        ◎手动删除的 Wifi 无法获取。\n
+        ◎单击列表里的 Wifi 名称和密码可以复制。\n
+        ◎有密码的WiFi排在前面。\n
+        ◎可以设置显示无密码WiFi或者不显示。\n
+        ◎可以设置WiFi列表的排序方式。\n\n
+        Juicecwc \n 2016.9.1\n\n</string>
+
+</resources>

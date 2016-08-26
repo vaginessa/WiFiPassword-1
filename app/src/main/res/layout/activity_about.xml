@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/activity_horizontal_margin">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/wifi_large"
+        android:id="@+id/icon"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/app_name"
+        android:text="@string/app_name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="4dp"
+        android:layout_below="@id/icon" />
+
+    <View
+        style="@style/Divider"
+        android:layout_below="@id/app_name"
+        android:layout_marginTop="12dp"
+        android:id="@+id/divider_1" />
+
+    <TextView
+        style="@style/TextView"
+        android:id="@+id/introduction"
+        android:layout_below="@id/divider_1"
+        android:text="@string/introduction" />
+
+    <View
+        style="@style/Divider"
+        android:id="@+id/divider_2"
+        android:layout_below="@id/introduction" />
+
+    <TextView
+        style="@style/TextView"
+        android:id="@+id/opensource"
+        android:layout_below="@id/divider_2"
+        android:text="@string/opensource" />
+
+    <View
+        style="@style/Divider"
+        android:id="@+id/divider_3"
+        android:layout_below="@id/opensource" />
+
+    <TextView
+        style="@style/TextView"
+        android:id="@+id/feedback"
+        android:layout_below="@id/divider_3"
+        android:text="@string/feedback" />
+
+    <View
+        style="@style/Divider"
+        android:id="@+id/divider_4"
+        android:layout_below="@id/feedback" />
+
+    <TextView
+        style="@style/TextView"
+        android:id="@+id/share"
+        android:layout_below="@id/divider_4"
+        android:text="@string/share" />
+
+    <View
+        style="@style/Divider"
+        android:id="@+id/divider_5"
+        android:layout_below="@id/share" />
+
+    <TextView
+        style="@style/TextView"
+        android:id="@+id/rate"
+        android:layout_below="@id/divider_5"
+        android:text="@string/rate" />
+
+    <View
+        style="@style/Divider"
+        android:id="@+id/divider_6"
+        android:layout_below="@id/rate" />
+
+    <TextView
+        style="@style/TextView"
+        android:id="@+id/donate"
+        android:layout_below="@id/divider_6"
+        android:text="@string/donate" />
+
+    <View
+        style="@style/Divider"
+        android:id="@+id/divider_7"
+        android:layout_below="@id/donate" />
+
+
+
+</RelativeLayout>

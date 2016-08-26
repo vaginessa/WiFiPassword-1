@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/activity_horizontal_margin">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settingtitle"
+        android:id="@+id/settings_title"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="italic"/>
+
+    <View
+        style="@style/Divider"
+        android:id="@+id/settings_divider"
+        android:layout_below="@id/settings_title" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/setting_show"
+        android:layout_below="@id/settings_divider"
+        android:textSize="18sp"
+        android:layout_marginTop="4dp"
+        android:text="@string/settingshow" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settingtitle1"
+        android:id="@+id/settings_title1"
+        android:layout_marginTop="18dp"
+        android:layout_below="@id/setting_show"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="italic"/>
+
+    <View
+        style="@style/Divider"
+        android:id="@+id/settings_divider2"
+        android:layout_below="@id/settings_title1" />
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/setting_sort"
+        android:layout_below="@id/settings_divider2">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_marginTop="4dp"
+            android:id="@+id/setting_sort_up"
+            android:text="@string/settingsortup" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_marginTop="4dp"
+            android:id="@+id/setting_sort_down"
+            android:text="@string/settingsortdown" />
+
+    </RadioGroup>
+
+</RelativeLayout>
