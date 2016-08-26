@@ -57,7 +57,12 @@ public class WiFiAdapter extends BaseAdapter {
         } else {
             viewHolder = (ViewHolder)view.getTag();
         }
-        viewHolder.wifiName.setText(list.get(i).getName());
+        //名字乱码的情况
+        if (list.get(i).getName() == "") {
+            viewHolder.wifiName.setText(R.string.noname);
+        } else {
+            viewHolder.wifiName.setText(list.get(i).getName());
+        }
         String temp_password = list.get(i).getPassword();
         //没有密码的情况
         if (temp_password == null) {
@@ -65,6 +70,7 @@ public class WiFiAdapter extends BaseAdapter {
             viewHolder.wifiPassword.setTextColor(Color.GRAY);
         } else {
             viewHolder.wifiPassword.setText(temp_password);
+            viewHolder.wifiPassword.setTextColor(Color.BLACK);
         }
 
         return view;

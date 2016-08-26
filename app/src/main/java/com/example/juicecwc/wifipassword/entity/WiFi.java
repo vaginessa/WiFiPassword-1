@@ -35,7 +35,8 @@ public class WiFi implements Comparable<WiFi> {
 
     @Override
     public int compareTo(WiFi wiFi) {
-        if (!this.getName().equals(wiFi.getName())) {
+        if (!this.getName().equals(wiFi.getName())
+                && this.getName() != "" && wiFi.getName() != "") {
             int i = 0;
             while (i < this.getName().length() && i < wiFi.getName().length()) {
                 if (trans2lower(this.getName().charAt(i)) != trans2lower(wiFi.getName().charAt(i)))
@@ -52,7 +53,7 @@ public class WiFi implements Comparable<WiFi> {
             return this.getName().charAt(i) - wiFi.getName().charAt(i);
         }
         else
-            return 0;
+            return -1;
     }
 
     //将字符转为小写字母

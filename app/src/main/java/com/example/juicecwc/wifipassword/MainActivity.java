@@ -172,6 +172,9 @@ public class MainActivity extends AppCompatActivity {
                 getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData = null;
         String temp_password = wifi_click.getPassword();
+        String temp_name = wifi_click.getName();
+        if (temp_name.isEmpty())
+            Log.d("TAG", "empty");
         /*if (temp_password == null)
             Log.d("TAG", "null");*/
         switch (item.getItemId()) {
@@ -186,13 +189,20 @@ public class MainActivity extends AppCompatActivity {
                 //Log.d("TAG", temp_password);
                 break;
             case R.id.copy_name:
-                clipData = ClipData.newPlainText("name", wifi_click.getName());
-                clipboardManager.setPrimaryClip(clipData);
-                Toast.makeText(this, "名称复制成功", Toast.LENGTH_SHORT).show();
+                if (temp_name == "Sorry, Cannot get WiFi name =_=")
+                    Toast.makeText(this, "WiFi名称为乱码，无法复制", Toast.LENGTH_SHORT).show();
+                else {
+                    clipData = ClipData.newPlainText("name", wifi_click.getName());
+                    clipboardManager.setPrimaryClip(clipData);
+                    Toast.makeText(this, "名称复制成功", Toast.LENGTH_SHORT).show();
+                }
+
                 break;
             case R.id.copy_all:
                 if (temp_password == null)
                     Toast.makeText(this, "密码为空，无法复制", Toast.LENGTH_SHORT).show();
+                else if (temp_name == "Sorry, Cannot get WiFi name =_=")
+                    Toast.makeText(this, "WiFi名称为乱码，无法复制", Toast.LENGTH_SHORT).show();
                 else {
                     clipData = ClipData.newPlainText("all", "名称：" + wifi_click.getName() + "\n"
                             + "密码：" + temp_password);
