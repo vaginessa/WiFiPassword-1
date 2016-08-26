@@ -18,6 +18,7 @@ public class OpensourceActivity extends AppCompatActivity implements View.OnClic
 
     private LinearLayout layout_1;
     private LinearLayout layout_2;
+    private LinearLayout layout_3;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -27,8 +28,10 @@ public class OpensourceActivity extends AppCompatActivity implements View.OnClic
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         layout_1 = (LinearLayout)findViewById(R.id.reference_1);
         layout_2 = (LinearLayout)findViewById(R.id.reference_2);
+        layout_3 = (LinearLayout)findViewById(R.id.myproject);
         layout_1.setOnClickListener(this);
         layout_2.setOnClickListener(this);
+        layout_3.setOnClickListener(this);
     }
 
     @Override
@@ -47,6 +50,13 @@ public class OpensourceActivity extends AppCompatActivity implements View.OnClic
                 intent2.setAction(Intent.ACTION_VIEW);
                 intent2.setData(uri2);
                 startActivity(intent2);
+                break;
+            case R.id.myproject:
+                Uri uri3 = Uri.parse("" + getString(R.string.myprojecturl));
+                Intent intent3 = new Intent();
+                intent3.setAction(Intent.ACTION_VIEW);
+                intent3.setData(uri3);
+                startActivity(intent3);
                 break;
         }
     }
