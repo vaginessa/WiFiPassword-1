@@ -6,8 +6,8 @@
         地址为：https://github.com/juicecwc/WiFiPassword
 
 Tips：
-    ◎手动删除的 Wifi 无法获取。
-    ◎单击列表里的 Wifi 名称和密码可以复制。
-    ◎有密码的WiFi排在前面。
-    ◎可以设置显示无密码WiFi或者不显示。
-    ◎可以设置WiFi列表的排序方式。
+        ◎手动删除的 Wifi 无法获取。
+        ◎单击列表里的 Wifi 名称和密码可以复制。
+        ◎有密码的WiFi排在前面。
+        ◎可以设置显示无密码WiFi或者不显示。
+        ◎可以设置WiFi列表的排序方式。
