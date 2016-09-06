@@ -3,6 +3,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="true"
     android:layout_margin="@dimen/activity_horizontal_margin">
 
     <TextView
@@ -11,8 +13,7 @@
         android:text="@string/settingtitle"
         android:id="@+id/settings_title"
         android:layout_marginTop="12dp"
-        android:textColor="@color/colorPrimaryDark"
-        android:textStyle="italic"/>
+        android:textColor="@color/colorPrimaryDark" />
 
     <View
         style="@style/Divider"
@@ -45,8 +46,7 @@
         android:id="@+id/settings_title1"
         android:layout_marginTop="18dp"
         android:layout_below="@id/setting_show_noname"
-        android:textColor="@color/colorPrimaryDark"
-        android:textStyle="italic"/>
+        android:textColor="@color/colorPrimaryDark" />
 
     <View
         style="@style/Divider"

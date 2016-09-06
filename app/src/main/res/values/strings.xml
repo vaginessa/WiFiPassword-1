@@ -2,6 +2,8 @@
     <string name="app_name">WiFi密码查看器</string>
     <string name="noroot">抱歉，未取得root授权，本软件功能无法正常使用</string>
     <string name="nowifi">抱歉，未找到WiFi密码信息</string>
+    <string name="search">搜索</string>
+    <string name="search_hint">搜索WiFi</string>
     <string name="settings">设置</string>
     <string name="about">关于</string>
     <string name="copyall">复制WiFi名称与密码</string>
