@@ -6,19 +6,24 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.SearchRecentSuggestions;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.example.juicecwc.wifipassword.entity.WiFi;
+import com.example.juicecwc.wifipassword.util.MySuggestionProvider;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.util.List;
@@ -32,12 +37,14 @@ public class SettingsActivity extends BaseActivity {
     private RadioButton btn_down;
     private CheckBox btn_show;
     private CheckBox btn_show_noname;
+    private TextView tv_clear;
     private Context mContext;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private int btn = 0;
     private boolean check = false;
     private boolean check_name = false;
+    private boolean clear = false; //清空历史记录
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,6 +64,7 @@ public class SettingsActivity extends BaseActivity {
         radioGroup = (RadioGroup)findViewById(R.id.setting_sort);
         btn_show = (CheckBox) findViewById(R.id.setting_show);
         btn_show_noname = (CheckBox)findViewById(R.id.setting_show_noname);
+        tv_clear = (TextView) findViewById(R.id.setting_clear_tv);
         btn_up = (RadioButton)findViewById(R.id.setting_sort_up);
         btn_down = (RadioButton)findViewById(R.id.setting_sort_down);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -83,6 +91,14 @@ public class SettingsActivity extends BaseActivity {
                 check_name = b;
             }
         });
+
+        //清空搜索记录
+        tv_clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clear = true;
+            }
+        });
     }
 
     @Override
@@ -92,6 +108,7 @@ public class SettingsActivity extends BaseActivity {
         editor.putInt("sort", btn);
         editor.putBoolean("show", check);
         editor.putBoolean("show_noname", check_name);
+        editor.putBoolean("clear", clear);
         editor.commit();
     }
 
@@ -105,6 +122,7 @@ public class SettingsActivity extends BaseActivity {
             btn_down.setChecked(true);
         btn_show.setChecked(sharedPreferences.getBoolean("show", false));
         btn_show_noname.setChecked(sharedPreferences.getBoolean("show_noname", false));
+        clear = false;
     }
 
     //返回按钮

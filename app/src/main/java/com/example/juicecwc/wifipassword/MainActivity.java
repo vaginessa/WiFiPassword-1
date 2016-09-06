@@ -14,6 +14,7 @@ import android.provider.SearchRecentSuggestions;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
@@ -26,6 +27,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -60,9 +63,10 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
     private List<WiFi> noNameList;
     private WiFi wifi_click;
     private WiFiAdapter mWiFiAdapter;
-    private Context mContext = MainActivity.this;
+    private Context mContext;
     private SharedPreferences sharedPreferences;
     private SwipeRefreshLayout refreshLayout; //下拉刷新
+    private boolean clear; //清空搜索记录
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +107,7 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
 
         //搜索
         handleIntent(getIntent());
-        listView.setTextFilterEnabled(true);
+        // listView.setTextFilterEnabled(true);
 
         registerForContextMenu(listView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -292,15 +296,21 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
                 Intent intent1 = new Intent(mContext, AboutActivity.class);
                 startActivity(intent1);
                 break;
-            /*case R.id.search: //搜索
+            case R.id.search: //搜索
                 onSearchRequested();
-                break;*/
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    //刷新列表
     public void flush() {
+        clear = sharedPreferences.getBoolean("clear", false);
+        if (clear == true) {
+            clearHistory();
+        }
+
         int sort = sharedPreferences.getInt("sort", 0);
         pskList.clear();
         for (WiFi wiFi : dataList) {
@@ -331,8 +341,11 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
             //Log.d("TAG", "show all");
         }
 
+        //mWiFiAdapter.setList(showList);
         //Log.d("TAG", pskList.toString());
-        mWiFiAdapter.notifyDataSetChanged();
+        mWiFiAdapter.reset();
+        mWiFiAdapter.notifyDataSetChanged(); //只会改变WiFiAdapter里的list的值不会改变list_filter的值
+        Log.d("TAG", "flush");
     }
 
     @Override
@@ -374,7 +387,7 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
                 flush();
                 refreshLayout.setRefreshing(false);
             }
-        }, 1000);
+        }, 500);
     }
 
     //搜索
@@ -386,9 +399,19 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
 
     //搜索
     private void handleIntent(Intent intent) {
-        if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-            String query = intent.getStringExtra(SearchManager.QUERY) ; //获取用户输入的关键字
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY); //获取用户输入的关键字
             /*Toast.makeText(this,"the query key is " + query,Toast.LENGTH_LONG).show(); //弹出用户输入的关键字，模拟搜索处理*/
+            if (query.isEmpty()) {
+                listView.clearTextFilter();
+                mWiFiAdapter.reset();
+            }
+            else {
+                mWiFiAdapter.getFilter().filter(query);
+                Log.d("TAG", "getCount_out: " + mWiFiAdapter.getCount());
+                Toast.makeText(mContext, "查找成功，下拉刷新返回", Toast.LENGTH_SHORT).show();
+            }
+
             //listView.setFilterText(query);
 
             //保存搜索记录
@@ -396,8 +419,15 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
                     MySuggestionProvider.AUTHORITY, MySuggestionProvider.MODE);
             suggestions.saveRecentQuery(query, null);
         }
-
     }
+    //清空搜索记录
+    public void clearHistory() {
+        SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this, MySuggestionProvider.AUTHORITY, MySuggestionProvider.MODE);
+        suggestions.clearHistory();
 
-
+        clear = false;
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("clear", clear);
+        editor.commit();
+    }
 }

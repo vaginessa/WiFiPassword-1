@@ -77,4 +77,44 @@
 
     </RadioGroup>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settingtitle2"
+        android:id="@+id/settings_title2"
+        android:layout_marginTop="18dp"
+        android:layout_below="@id/setting_sort"
+        android:textColor="@color/colorPrimaryDark" />
+
+    <View
+        style="@style/Divider"
+        android:id="@+id/settings_divider3"
+        android:layout_below="@id/settings_title2" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linear_layout"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:layout_below="@id/settings_divider3" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/clear" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:clickable="true"
+            android:layout_marginLeft="6dp"
+            android:textColor="@color/textview_press"
+            android:id="@+id/setting_clear_tv"
+            android:text="@string/clearhistory" />
+
+    </LinearLayout>
+
+
 </RelativeLayout>

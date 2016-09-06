@@ -17,6 +17,8 @@
     <string name="settingsortdown">按WiFi名降序排列</string>
     <string name="settingtitle">显示设置</string>
     <string name="settingtitle1">列表排序</string>
+    <string name="settingtitle2">搜索设置</string>
+    <string name="clearhistory">清空搜索记录</string>
     <string name="introduction">软件说明</string>
     <string name="opensource">开源项目</string>
     <string name="feedback">邮件反馈</string>
