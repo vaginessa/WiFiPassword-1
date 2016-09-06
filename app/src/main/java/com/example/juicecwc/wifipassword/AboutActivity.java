@@ -26,7 +26,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 /**
  * Created by juicecwc on 2016/8/25.
  */
-public class AboutActivity extends AppCompatActivity implements View.OnClickListener {
+public class AboutActivity extends BaseActivity implements View.OnClickListener {
 
     private TextView tv_introduction;
     private TextView tv_opensource;

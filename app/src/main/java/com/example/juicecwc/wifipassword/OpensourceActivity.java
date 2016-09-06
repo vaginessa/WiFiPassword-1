@@ -20,7 +20,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 /**
  * Created by juicecwc on 2016/8/26.
  */
-public class OpensourceActivity extends AppCompatActivity implements View.OnClickListener {
+public class OpensourceActivity extends BaseActivity implements View.OnClickListener {
 
     private LinearLayout layout_1;
     private LinearLayout layout_2;

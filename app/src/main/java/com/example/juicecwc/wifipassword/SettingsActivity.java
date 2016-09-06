@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Created by juicecwc on 2016/8/25.
  */
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
     private RadioGroup radioGroup;
     private RadioButton btn_up;
     private RadioButton btn_down;

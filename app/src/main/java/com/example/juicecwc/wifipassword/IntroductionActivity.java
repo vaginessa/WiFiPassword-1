@@ -17,7 +17,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 /**
  * Created by juicecwc on 2016/8/26.
  */
-public class IntroductionActivity extends AppCompatActivity {
+public class IntroductionActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
