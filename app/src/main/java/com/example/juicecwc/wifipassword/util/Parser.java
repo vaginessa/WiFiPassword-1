@@ -43,11 +43,43 @@ public class Parser {
                 temp_name = temp_name.substring(1, len - 1);
                 wifi.setName(temp_name);
             }
-            else
-                wifi.setName("Sorry, Cannot get WiFi name =_=");  //R.string.noname
-            wifi.setPassword(matcher.group(3));
+            else {
+                //wifi.setName("Sorry, Cannot get WiFi name =_=");  //R.string.noname
+                wifi.setName(convertUTF8ToString(temp_name));
+            }
+                wifi.setPassword(matcher.group(3));
             list.add(wifi);
         }
         return list;
+    }
+
+    //将16进制的UTF-8编码转为对应的汉字，解决中文WiFi名乱码的问题
+    private static String convertUTF8ToString(String s) {
+        if (s == null || s.equals("")) {
+            return null;
+        }
+
+        try {
+            s = s.toUpperCase();
+
+            int total = s.length() / 2;
+            int pos = 0;
+
+            byte[] buffer = new byte[total];
+            for (int i = 0; i < total; i++) {
+
+                int start = i * 2;
+
+                buffer[i] = (byte) Integer.parseInt(
+                        s.substring(start, start + 2), 16);
+                pos++;
+            }
+
+            return new String(buffer, 0, pos, "UTF-8");
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return s;
     }
 }

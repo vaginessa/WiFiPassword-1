@@ -72,12 +72,12 @@ public class WiFiAdapter extends BaseAdapter implements Filterable {
         } else {
             viewHolder = (ViewHolder)view.getTag();
         }
-        //名字乱码的情况
+        /*//名字乱码的情况
         if (list_filter.get(i).getName() == "") {
             viewHolder.wifiName.setText(R.string.noname);
-        } else {
+        } else {*/
             viewHolder.wifiName.setText(list_filter.get(i).getName());
-        }
+        //}
         String temp_password = list_filter.get(i).getPassword();
         //没有密码的情况
         if (temp_password == null) {

@@ -21,6 +21,7 @@ import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.juicecwc.wifipassword.entity.WiFi;
 import com.example.juicecwc.wifipassword.util.MySuggestionProvider;
@@ -36,14 +37,14 @@ public class SettingsActivity extends BaseActivity {
     private RadioButton btn_up;
     private RadioButton btn_down;
     private CheckBox btn_show;
-    private CheckBox btn_show_noname;
+    //private CheckBox btn_show_noname;
     private TextView tv_clear;
     private Context mContext;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private int btn = 0;
     private boolean check = false;
-    private boolean check_name = false;
+    //private boolean check_name = false;
     private boolean clear = false; //清空历史记录
 
     @Override
@@ -63,7 +64,7 @@ public class SettingsActivity extends BaseActivity {
                 Context.MODE_PRIVATE);
         radioGroup = (RadioGroup)findViewById(R.id.setting_sort);
         btn_show = (CheckBox) findViewById(R.id.setting_show);
-        btn_show_noname = (CheckBox)findViewById(R.id.setting_show_noname);
+        //btn_show_noname = (CheckBox)findViewById(R.id.setting_show_noname);
         tv_clear = (TextView) findViewById(R.id.setting_clear_tv);
         btn_up = (RadioButton)findViewById(R.id.setting_sort_up);
         btn_down = (RadioButton)findViewById(R.id.setting_sort_down);
@@ -85,18 +86,19 @@ public class SettingsActivity extends BaseActivity {
             }
         });
 
-        btn_show_noname.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        /*btn_show_noname.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 check_name = b;
             }
-        });
+        });*/
 
         //清空搜索记录
         tv_clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 clear = true;
+                Toast.makeText(mContext, R.string.doneclearhistory, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -107,7 +109,7 @@ public class SettingsActivity extends BaseActivity {
         editor = sharedPreferences.edit();
         editor.putInt("sort", btn);
         editor.putBoolean("show", check);
-        editor.putBoolean("show_noname", check_name);
+        //editor.putBoolean("show_noname", check_name);
         editor.putBoolean("clear", clear);
         editor.commit();
     }
@@ -121,7 +123,7 @@ public class SettingsActivity extends BaseActivity {
         else if (choose == 2)
             btn_down.setChecked(true);
         btn_show.setChecked(sharedPreferences.getBoolean("show", false));
-        btn_show_noname.setChecked(sharedPreferences.getBoolean("show_noname", false));
+        //btn_show_noname.setChecked(sharedPreferences.getBoolean("show_noname", false));
         clear = false;
     }
 

@@ -60,7 +60,7 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
     private List<WiFi> pskList;
     private List<WiFi> showList;
     private List<WiFi> dataList;
-    private List<WiFi> noNameList;
+    //private List<WiFi> noNameList;
     private WiFi wifi_click;
     private WiFiAdapter mWiFiAdapter;
     private Context mContext;
@@ -123,7 +123,7 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
         noPskList = new ArrayList<>();
         pskList = new ArrayList<>();
         showList = new ArrayList<>();
-        noNameList = new ArrayList<>();
+        //noNameList = new ArrayList<>();
         doWork();
 
     }
@@ -187,10 +187,10 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
                 for (WiFi wifi : dataList) {
                     if (wifi.getPassword() == null) {
                         noPskList.add(wifi);
-                    } else if (wifi.getName() == "Sorry, Cannot get WiFi name =_=") {
-                    /*} else if (wifi.getName() == "名称乱码") {*/
+                    } /*else if (wifi.getName() == "Sorry, Cannot get WiFi name =_=") {
+                    *//*} else if (wifi.getName() == "名称乱码") {*//*
                         noNameList.add(wifi);
-                    } else {
+                    }*/ else {
                         pskList.add(wifi);
                     }
                 }
@@ -242,22 +242,22 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
                 //Log.d("TAG", temp_password);
                 break;
             case R.id.copy_name:
-                if (temp_name == "Sorry, Cannot get WiFi name =_=")
-                /*if (temp_name == "名称乱码")*/
-                    Toast.makeText(this, "WiFi名称为乱码，无法复制", Toast.LENGTH_SHORT).show();
-                else {
+                /*if (temp_name == "Sorry, Cannot get WiFi name =_=")
+                *//*if (temp_name == "名称乱码")*//*
+                    Toast.makeText(this, "WiFi名称为乱码，无法复制", Toast.LENGTH_SHORT).show();*/
+                //else {
                     clipData = ClipData.newPlainText("name", wifi_click.getName());
                     clipboardManager.setPrimaryClip(clipData);
                     Toast.makeText(this, "名称复制成功", Toast.LENGTH_SHORT).show();
-                }
+                //}
 
                 break;
             case R.id.copy_all:
                 if (temp_password == null)
                     Toast.makeText(this, "密码为空，无法复制", Toast.LENGTH_SHORT).show();
-                else if (temp_name == "Sorry, Cannot get WiFi name =_=")
-                /*else if (temp_name == "名称乱码")*/
-                    Toast.makeText(this, "WiFi名称为乱码，无法复制", Toast.LENGTH_SHORT).show();
+                /*else if (temp_name == "Sorry, Cannot get WiFi name =_=")
+                *//*else if (temp_name == "名称乱码")*//*
+                    Toast.makeText(this, "WiFi名称为乱码，无法复制", Toast.LENGTH_SHORT).show();*/
                 else {
                     clipData = ClipData.newPlainText("all", "名称：" + wifi_click.getName() + "\n"
                             + "密码：" + temp_password);
@@ -314,7 +314,7 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
         int sort = sharedPreferences.getInt("sort", 0);
         pskList.clear();
         for (WiFi wiFi : dataList) {
-            if (noPskList.contains(wiFi) || noNameList.contains(wiFi))
+            if (noPskList.contains(wiFi)) // || noNameList.contains(wiFi))
                 continue;
             pskList.add(wiFi);
         }
@@ -331,9 +331,9 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
         }
         showList = pskList;
 
-        boolean flag_show_noname = sharedPreferences.getBoolean("show_noname", false);
+        /*boolean flag_show_noname = sharedPreferences.getBoolean("show_noname", false);
         if (flag_show_noname == true)
-            showList.addAll(noNameList);
+            showList.addAll(noNameList);*/
 
         boolean flag_show = sharedPreferences.getBoolean("show", false);
         if (flag_show == true) {
@@ -424,6 +424,7 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
     public void clearHistory() {
         SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this, MySuggestionProvider.AUTHORITY, MySuggestionProvider.MODE);
         suggestions.clearHistory();
+
 
         clear = false;
         SharedPreferences.Editor editor = sharedPreferences.edit();
