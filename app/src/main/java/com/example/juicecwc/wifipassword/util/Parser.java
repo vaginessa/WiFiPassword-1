@@ -1,5 +1,6 @@
 package com.example.juicecwc.wifipassword.util;
 
+import android.os.Build;
 import android.util.Log;
 
 import com.example.juicecwc.wifipassword.R;
@@ -45,7 +46,10 @@ public class Parser {
             }
             else {
                 //wifi.setName("Sorry, Cannot get WiFi name =_=");  //R.string.noname
-                wifi.setName(convertUTF8ToString(temp_name));
+                if (isMIUI())
+                    wifi.setName(convertGBKToString(temp_name));
+                else
+                    wifi.setName(convertUTF8ToString(temp_name));
             }
                 wifi.setPassword(matcher.group(3));
             list.add(wifi);
@@ -81,5 +85,40 @@ public class Parser {
             e.printStackTrace();
         }
         return s;
+    }
+
+    //将16进制的GBK编码转为对应的汉字，解决小米中文WiFi名乱码的问题
+    private static String convertGBKToString(String s) {
+        if (s == null || s.equals("")) {
+            return null;
+        }
+
+        try {
+            s = s.toUpperCase();
+
+            int total = s.length() / 2;
+            int pos = 0;
+
+            byte[] buffer = new byte[total];
+            for (int i = 0; i < total; i++) {
+
+                int start = i * 2;
+
+                buffer[i] = (byte) Integer.parseInt(
+                        s.substring(start, start + 2), 16);
+                pos++;
+            }
+
+            return new String(buffer, 0, pos, "GBK");
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return s;
+    }
+
+    //检测是否MIUI
+    private static boolean isMIUI() {
+        return (Build.MANUFACTURER.equals("Xiaomi"));
     }
 }

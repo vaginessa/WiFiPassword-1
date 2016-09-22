@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Handler;
 import android.provider.SearchRecentSuggestions;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -26,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Filter;
@@ -67,6 +69,7 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
     private SharedPreferences sharedPreferences;
     private SwipeRefreshLayout refreshLayout; //下拉刷新
     private boolean clear; //清空搜索记录
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,8 +108,8 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
         listView = (ListView)findViewById(R.id.list);
         textView = (TextView)findViewById(R.id.text);
 
-        //搜索
-        handleIntent(getIntent());
+        /*//搜索
+        handleIntent(getIntent());*/
         // listView.setTextFilterEnabled(true);
 
         registerForContextMenu(listView);
@@ -282,6 +285,31 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
         /*searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));*/
 
+        //采用searchView试试
+        final MenuItem searchItem = menu.findItem(R.id.search);
+        searchView = (SearchView)MenuItemCompat.getActionView(searchItem);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //Toast.makeText(mContext, "查找成功，下拉刷新返回", Toast.LENGTH_SHORT).show();
+                //隐藏输入法
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    // 这将让键盘在所有的情况下都被隐藏，但是一般我们在点击搜索按钮后，输入法都会乖乖的自动隐藏的。
+                    imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0); // 输入法如果是显示状态，那么就隐藏输入法
+                }
+                searchView.clearFocus();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d("TAG", "Changed");
+                doSearch(newText);
+                return true;
+            }
+        });
         return true;
     }
 
@@ -296,9 +324,10 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
                 Intent intent1 = new Intent(mContext, AboutActivity.class);
                 startActivity(intent1);
                 break;
-            case R.id.search: //搜索
-                onSearchRequested();
-                break;
+            /*case R.id.search: //搜索
+                //onSearchRequested();
+
+                break;*/
         }
 
         return super.onOptionsItemSelected(item);
@@ -369,13 +398,16 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
         win.setAttributes(winParams);
     }
     private void setStatusStyle() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             setTranslucentStatus(true);
         }
         SystemBarTintManager tintManager;
         tintManager = new SystemBarTintManager(this);
         tintManager.setStatusBarTintEnabled(true);
-        tintManager.setStatusBarTintResource(R.color.colorPrimary); //状态栏颜色
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            tintManager.setStatusBarTintResource(R.color.colorPrimaryDark); //状态栏颜色
+        else
+            tintManager.setStatusBarTintResource(R.color.colorPrimary); //状态栏颜色
     }
 
     //下拉刷新
@@ -390,35 +422,40 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
         }, 500);
     }
 
-    //搜索
+    /*//搜索
     @Override
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
-        handleIntent(intent);
+        String query = handleIntent(intent);
+        doSearch(query);
     }
 
     //搜索
-    private void handleIntent(Intent intent) {
+    private String handleIntent(Intent intent) {
+        String query = null;
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY); //获取用户输入的关键字
-            /*Toast.makeText(this,"the query key is " + query,Toast.LENGTH_LONG).show(); //弹出用户输入的关键字，模拟搜索处理*/
-            if (query.isEmpty()) {
-                listView.clearTextFilter();
-                mWiFiAdapter.reset();
-            }
-            else {
-                mWiFiAdapter.getFilter().filter(query);
-                Log.d("TAG", "getCount_out: " + mWiFiAdapter.getCount());
-                Toast.makeText(mContext, "查找成功，下拉刷新返回", Toast.LENGTH_SHORT).show();
-            }
-
-            //listView.setFilterText(query);
-
-            //保存搜索记录
-            SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
-                    MySuggestionProvider.AUTHORITY, MySuggestionProvider.MODE);
-            suggestions.saveRecentQuery(query, null);
+            query = intent.getStringExtra(SearchManager.QUERY); //获取用户输入的关键字
         }
+        return query;
+    }*/
+
+    //执行搜索
+    private void doSearch(String query) {
+
+            /*Toast.makeText(this,"the query key is " + query,Toast.LENGTH_LONG).show(); //弹出用户输入的关键字，模拟搜索处理*/
+        if (query.isEmpty()) {
+            listView.clearTextFilter();
+            mWiFiAdapter.reset();
+        }
+        else {
+            mWiFiAdapter.getFilter().filter(query);
+            Log.d("TAG", "getCount_out: " + mWiFiAdapter.getCount());
+        }
+
+        //保存搜索记录
+        SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
+                MySuggestionProvider.AUTHORITY, MySuggestionProvider.MODE);
+        suggestions.saveRecentQuery(query, null);
     }
     //清空搜索记录
     public void clearHistory() {

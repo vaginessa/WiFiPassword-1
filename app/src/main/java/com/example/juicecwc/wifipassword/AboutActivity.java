@@ -188,12 +188,15 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
         win.setAttributes(winParams);
     }
     private void setStatusStyle() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             setTranslucentStatus(true);
         }
         SystemBarTintManager tintManager;
         tintManager = new SystemBarTintManager(this);
         tintManager.setStatusBarTintEnabled(true);
-        tintManager.setStatusBarTintResource(R.color.colorPrimary); //状态栏颜色
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            tintManager.setStatusBarTintResource(R.color.colorPrimaryDark); //状态栏颜色
+        else
+            tintManager.setStatusBarTintResource(R.color.colorPrimary); //状态栏颜色
     }
 }
