@@ -45,8 +45,11 @@ public class WiFiAdapter extends BaseAdapter implements Filterable {
 
     @Override
     public int getCount() {
-        Log.d("TAG", "getCount: " + list_filter.size());
-        return list_filter.size();
+        //Log.d("TAG", "getCount: " + list_filter.size());
+        if (list_filter == null)
+            return 0;
+        else
+            return list_filter.size();
     }
 
     @Override

@@ -285,7 +285,7 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
         /*searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));*/
 
-        //采用searchView试试
+        //采用searchView作为搜索UI
         final MenuItem searchItem = menu.findItem(R.id.search);
         searchView = (SearchView)MenuItemCompat.getActionView(searchItem);
 
@@ -452,10 +452,10 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
             Log.d("TAG", "getCount_out: " + mWiFiAdapter.getCount());
         }
 
-        //保存搜索记录
+        /*//保存搜索记录
         SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
                 MySuggestionProvider.AUTHORITY, MySuggestionProvider.MODE);
-        suggestions.saveRecentQuery(query, null);
+        suggestions.saveRecentQuery(query, null);*/
     }
     //清空搜索记录
     public void clearHistory() {
