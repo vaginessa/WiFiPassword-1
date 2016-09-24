@@ -2,31 +2,37 @@ package com.example.juicecwc.wifipassword;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.SearchRecentSuggestions;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.juicecwc.wifipassword.entity.WiFi;
 import com.example.juicecwc.wifipassword.util.MySuggestionProvider;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -85,13 +91,6 @@ public class SettingsActivity extends BaseActivity {
                 check = b;
             }
         });
-
-        /*btn_show_noname.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                check_name = b;
-            }
-        });*/
 
         //清空搜索记录
         tv_clear.setOnClickListener(new View.OnClickListener() {

@@ -47,6 +47,10 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -70,6 +74,9 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
     private SwipeRefreshLayout refreshLayout; //下拉刷新
     private boolean clear; //清空搜索记录
     private SearchView searchView;
+    private String backupParentPath;
+    private String backupPath;
+    private String out = null; //读出的数据
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,22 +89,13 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
 
         mContext = MainActivity.this;
 
+        //备份路径
+        backupParentPath = mContext.getExternalFilesDir("Backup").getPath();
+        backupPath = backupParentPath + "/wpa_supplicant.conf";
+
         //下拉刷新
         refreshLayout = (SwipeRefreshLayout)findViewById(R.id.refresh_layout);
         refreshLayout.setOnRefreshListener(this);
-        /*refreshLayout.post(new Runnable() { //一进入界面就刷新
-            @Override
-            public void run() {
-                refreshLayout.setRefreshing(true);
-            }
-        });
-        new Handler().postDelayed(new Runnable() { //一个定时器
-            @Override
-            public void run() {
-                flush();
-                refreshLayout.setRefreshing(false);
-            }
-        }, 2000);*/
         refreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright, //设置动画颜色
                 android.R.color.holo_green_light, android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
@@ -107,10 +105,6 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
         mWiFiAdapter = new WiFiAdapter();
         listView = (ListView)findViewById(R.id.list);
         textView = (TextView)findViewById(R.id.text);
-
-        /*//搜索
-        handleIntent(getIntent());*/
-        // listView.setTextFilterEnabled(true);
 
         registerForContextMenu(listView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -135,44 +129,14 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
         boolean flag_root = Root.isRoot();
         Log.d("TAG", "check");
         if (flag_root) {
+            File tempFile = new File(backupPath);
             Log.d("TAG", "isroot");
-            Process process = null;
-            DataOutputStream outputStream = null;
-            DataInputStream inputStream = null;
-            StringBuffer sBuffer = new StringBuffer();
-            String out = null;
 
-            //读取该文件
-            try {
-                process = Runtime.getRuntime().exec("su");
-                outputStream = new DataOutputStream(process.getOutputStream());
-                inputStream = new DataInputStream(process.getInputStream());
-                outputStream.writeBytes(filePath + "\n");
-                outputStream.writeBytes("exit\n");
-                outputStream.flush();
-                InputStreamReader inputStreamReader = new InputStreamReader(
-                        inputStream, "UTF-8");
-                BufferedReader reader = new BufferedReader(inputStreamReader);
-                String temp = null;
-                while ((temp = reader.readLine()) != null) {
-                    sBuffer.append(temp);
-                }
-                out = sBuffer.toString();
-                reader.close();
-                inputStream.close();
-                process.waitFor();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (outputStream != null)
-                        outputStream.close();
-                    if (inputStream != null)
-                        inputStream.close();
-                    process.destroy();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            //未备份的情况——第一次使用本软件,进行备份
+            if (!tempFile.exists()) {
+                out = Backup();
+            } else { //已有备份了，直接从备份中读取
+                out = ReadBackup();
             }
 
             //没有WiFi密码信息
@@ -211,6 +175,79 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
             textView.setText(R.string.noroot);
         }
 
+    }
+
+    //备份
+    private String Backup() {
+        out = null;
+        Process process = null;
+        DataOutputStream outputStream = null;
+        DataInputStream inputStream = null;
+        StringBuffer sBuffer = new StringBuffer();
+
+        File tempDir = new File(backupParentPath);
+        if (!tempDir.exists())
+            tempDir.mkdir();
+        //读取该文件
+        try {
+            //用来写入SD卡备份文件
+            FileOutputStream fileOutputStream = new FileOutputStream(backupPath);
+
+            process = Runtime.getRuntime().exec("su");
+            outputStream = new DataOutputStream(process.getOutputStream());
+            inputStream = new DataInputStream(process.getInputStream());
+            outputStream.writeBytes(filePath + "\n");
+            outputStream.writeBytes("exit\n");
+            outputStream.flush();
+            InputStreamReader inputStreamReader = new InputStreamReader(
+                    inputStream, "UTF-8");
+            BufferedReader reader = new BufferedReader(inputStreamReader);
+            String temp = null;
+            while ((temp = reader.readLine()) != null) {
+                fileOutputStream.write((temp + "\n").getBytes());
+                sBuffer.append(temp);
+            }
+            out = sBuffer.toString();
+            reader.close();
+            fileOutputStream.close();
+            inputStream.close();
+            process.waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (outputStream != null)
+                    outputStream.close();
+                if (inputStream != null)
+                    inputStream.close();
+                process.destroy();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return out;
+    }
+
+    //读取备份数据
+    private String ReadBackup() {
+        out = null;
+        try {
+            FileInputStream fileInputStream = new FileInputStream(backupPath);
+            InputStreamReader inputStreamReader = new InputStreamReader(
+                    fileInputStream, "UTF-8");
+            BufferedReader reader = new BufferedReader(inputStreamReader);
+            StringBuffer sBuffer = new StringBuffer();
+            String temp = null;
+            while ((temp = reader.readLine()) != null) {
+                sBuffer.append(temp);
+            }
+            out = sBuffer.toString();
+            reader.close();
+            fileInputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return out;
     }
 
     @Override
@@ -417,6 +454,7 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
             @Override
             public void run() {
                 flush();
+                out = Backup();
                 refreshLayout.setRefreshing(false);
             }
         }, 500);

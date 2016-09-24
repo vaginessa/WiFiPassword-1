@@ -18,6 +18,18 @@
     <string name="settingtitle">显示设置</string>
     <string name="settingtitle1">列表排序</string>
     <string name="settingtitle2">搜索设置</string>
+    <string name="settingtitle3">备份还原</string>
+    <string name="backupmessage">WiFi密码将备份至目录下</string>
+    <string name="restoremessage">此过程不可逆转，确定继续还原？</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">确定</string>
+    <string name="backupdir">backup</string>
+    <string name="backupdone">备份已完成</string>
+    <string name="backupfail">备份失败</string>
+    <string name="restoredone">还原已完成</string>
+    <string name="nobackupfile">未找到备份文件</string>
+    <string name="restorefail">还原失败</string>
+    <string name="nosdcard">SD卡不存在或者不可读写</string>
     <string name="clearhistory">清空搜索记录</string>
     <string name="doneclearhistory">搜索记录已清空</string>
     <string name="introduction">软件说明</string>
@@ -40,17 +52,14 @@
     <string name="mine">本项目</string>
 
     <string name="introduction_content">
-            本应用作者为一名闲得蛋疼的准大三学生，暑假初学Android做了这个应用练手，望大神们轻喷。\n
-            此类应用的原理很简单，基本上都是读取系统目录 \"/data/misc/wifi/*.conf\" 中保存的WiFi密码，因此root权限是必须获取的。
-        本应用除了获取root权限以及sd卡读写权限之外没有获取任何其他权限，无广告、不盈利，如果您不放心，只好建议您卸载。\n
-            本应用参照了 cfm1120 的开源项目 seepwd ，wang4yu6peng13的开源项目 SeeWifiPwd ，Wing-Li 的开源方法检查 root 权限，同时本项目也开源，项目地址见菜单“开源项目”。\n
-            经过一番折腾，作者终于解决了中文WiFi名称乱码的问题，不过只在华为荣耀六中测试可用，还望机友们多多反馈~\n\n
+        \t\t\t\t本应用作者为一名闲得蛋疼的准大三学生，暑假初学Android做了这个应用练手，望大神们轻喷。\n\t\t\t\t此类应用的原理很简单，基本上都是读取系统目录 \"/data/misc/wifi/*.conf\" 中保存的WiFi密码，因此root权限是必须获取的。本应用除了获取root权限以及sd卡读写权限之外没有获取任何其他权限，无广告、不盈利，如果您不放心，只好建议您卸载。\n\t\t\t\t本应用参照了 cfm1120 的开源项目 seepwd ，wang4yu6peng13的开源项目 SeeWifiPwd ，Wing-Li 的开源方法检查 root 权限，同时本项目也开源，项目地址见菜单“开源项目”。\n\t\t\t\t经过一番折腾，作者终于解决了中文WiFi名称乱码的问题，不过只在华为荣耀六中测试可用，还望机友们多多反馈~\n\n
         Tips：\n
         ◎手动删除的 Wifi 无法获取。\n
         ◎单击列表里的 Wifi 名称和密码可以复制。\n
         ◎有密码的WiFi排在前面。\n
         ◎可以设置显示无密码WiFi或者不显示。\n
-        ◎可以设置WiFi列表的排序方式。\n\n
-        Juicecwc \n 2016.9.1\n\n</string>
+        ◎可以设置WiFi列表的排序方式。\n
+        ◎默认开启自动备份，备份文件在\"/Android/data/com.example.juicecwc.wifipassword/files/Backup"下。\n\n
+        Juicecwc \n        2016.9.1\n\n</string>
 
 </resources>
