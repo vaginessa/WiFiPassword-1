@@ -6,6 +6,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,7 +15,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -28,6 +29,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
  */
 public class AboutActivity extends BaseActivity implements View.OnClickListener {
 
+    private TextView tv_appName;
     private TextView tv_introduction;
     private TextView tv_opensource;
     private TextView tv_feedback;
@@ -48,6 +50,9 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void bindViews() {
+        tv_appName = (TextView)findViewById(R.id.app_name);
+        tv_appName.setText(getString(R.string.app_name) + " v" + getVersion());
+
         tv_introduction = (TextView)findViewById(R.id.introduction);
         tv_opensource = (TextView)findViewById(R.id.opensource);
         tv_feedback = (TextView)findViewById(R.id.feedback);
@@ -61,6 +66,22 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
         tv_share.setOnClickListener(this);
         tv_rate.setOnClickListener(this);
         tv_donate.setOnClickListener(this);
+    }
+
+    /**
+     * 获取版本号
+     * @return 当前应用的版本号
+     */
+    public String getVersion() {
+        try {
+            PackageManager manager = this.getPackageManager();
+            PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
+            String version = info.versionName;
+            return version;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override

@@ -1,16 +1,11 @@
 package com.example.juicecwc.wifipassword.util;
 
 import android.os.Build;
-import android.util.Log;
 
-import com.example.juicecwc.wifipassword.R;
 import com.example.juicecwc.wifipassword.entity.WiFi;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,10 +41,16 @@ public class Parser {
             }
             else {
                 //wifi.setName("Sorry, Cannot get WiFi name =_=");  //R.string.noname
-                if (isMIUI())
-                    wifi.setName(convertGBKToString(temp_name));
-                else
-                    wifi.setName(convertUTF8ToString(temp_name));
+                String convertString = convertUTF8ToString(temp_name);
+                if (isMIUI()) {
+                    Pattern MIUI = Pattern.compile("[a-zA-Z]");
+                    Matcher MIUI_matcher = MIUI.matcher(convertString);
+                    if (MIUI_matcher.find())
+                        wifi.setName(convertGBKToString(temp_name));
+                    else
+                        wifi.setName(convertString);
+                } else
+                    wifi.setName(convertString);
             }
                 wifi.setPassword(matcher.group(3));
             list.add(wifi);
