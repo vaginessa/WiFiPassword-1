@@ -1,33 +1,48 @@
 package com.example.juicecwc.wifipassword.util;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.juicecwc.wifipassword.R;
 import com.example.juicecwc.wifipassword.entity.WiFi;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
 
 /**
  * Created by juicecwc on 2016/8/24.
  */
-public class WiFiAdapter extends BaseAdapter implements Filterable {
+public class WiFiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+        implements Filterable, View.OnClickListener {
     private List<WiFi> list = null;
     private List<WiFi> list_filter = null;
-    private LayoutInflater inflater;
+    //private LayoutInflater inflater;
     private Context mContext;
     private Filter filter;
+    //处理正在连接的WiFi的header
+    private static final int TYPE_ITEM = 0;
+    private static final int TYPE_HEADER = 1;
+    private boolean mShowHeader = true;
+    private WiFi headerWifi;
+
+    private OnRecyclerViewItemClickListener mItemClickListener = null; //声明接口变量
+
+    //定义接口
+    public static interface OnRecyclerViewItemClickListener {
+        void onItemClick(View view , int data); //data为传递的数据，这里传递的是位置position
+    }
 
     public WiFiAdapter() {}
 
@@ -36,68 +51,163 @@ public class WiFiAdapter extends BaseAdapter implements Filterable {
         this.list_filter = list1;
         Log.d("TAG", "both changed: list size: " + this.list.size() + " list_filter size: " + this.list_filter.size());
         this.mContext = context;
-        this.inflater = LayoutInflater.from(mContext);
+        //this.inflater = LayoutInflater.from(mContext);
     }
 
-    /*public void setList(ArrayList<WiFi> list2) {
-        this.list = list2;
-    }*/
-
     @Override
-    public int getCount() {
-        //Log.d("TAG", "getCount: " + list_filter.size());
+    public int getItemCount() {
+        int begin = mShowHeader ? 1 : 0;
         if (list_filter == null)
-            return 0;
+            return begin;
         else
-            return list_filter.size();
+            return list_filter.size() + begin;
     }
 
     @Override
-    public Object getItem(int i) {
-        Log.d("TAG", "getItem");
-        return list_filter.get(i);
+    public int getItemViewType(int position) {
+        if (!mShowHeader)
+            return TYPE_ITEM;
+        if (position == 0) //第一行显示header
+            return TYPE_HEADER;
+        else
+            return TYPE_ITEM;
     }
 
     @Override
-    public long getItemId(int i) {
-        return i;
-    }
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+        int begin = mShowHeader ? 1 : 0;
+        position -= begin; //不加这句会溢出
+        if (holder instanceof ItemViewHolder) {
+            Resources resource = mContext.getResources();
+            ColorStateList csl_1 = resource.getColorStateList(R.color.colorGray);
+            ColorStateList csl_2 = resource.getColorStateList(R.color.textGray);
+            WiFi mWiFi = list_filter.get(position);
+            if (mWiFi == null)
+                return;
+            ((ItemViewHolder)holder).mName.setText(mWiFi.getName());
+            if (mWiFi.getPassword() == null) {
+                ((ItemViewHolder) holder).mPsd.setText(R.string.nopassword);
+                ((ItemViewHolder) holder).mPsd.setTextColor(csl_1);
+            }
 
-    @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        ViewHolder viewHolder = null;
-        if (view == null) {
-            view = inflater.inflate(R.layout.list_item, null);
-            viewHolder = new ViewHolder();
-            viewHolder.wifiName = (TextView)view.findViewById(R.id.item_name);
-            viewHolder.wifiPassword = (TextView)view.findViewById(R.id.item_password);
-            view.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder)view.getTag();
+            else {
+                ((ItemViewHolder) holder).mPsd.setText(mWiFi.getPassword());
+                ((ItemViewHolder) holder).mPsd.setTextColor(csl_2);
+            }
+            //设置Tag
+            holder.itemView.setTag(holder.getAdapterPosition() - begin);
+        } else if (holder instanceof HeaderViewHolder) {
+            /*//默认得到的SSID带引号，需进行处理
+            String headerName = new MyWiFiManager(mContext).getSSID();
+            int length = headerName.length();
+            headerName = headerName.substring(1, length - 1);*/
+
+            WiFi mWiFi = headerWifi;
+            Resources resource = mContext.getResources();
+            ColorStateList csl_1 = resource.getColorStateList(R.color.colorGray);
+            ColorStateList csl_2 = resource.getColorStateList(R.color.textGray);
+            if (mWiFi == null)
+                return;
+            ((HeaderViewHolder)holder).mName.setText(mWiFi.getName());
+            if (mWiFi.getPassword() == null) {
+                ((HeaderViewHolder) holder).mPsd.setText(R.string.nopassword);
+                ((HeaderViewHolder) holder).mPsd.setTextColor(csl_1);
+            }
+
+            else {
+                ((HeaderViewHolder) holder).mPsd.setText(mWiFi.getPassword());
+                ((HeaderViewHolder) holder).mPsd.setTextColor(csl_2);
+            }
+            //设置Tag
+            holder.itemView.setTag(-1); //设置tag为-1作为标志
         }
-        /*//名字乱码的情况
-        if (list_filter.get(i).getName() == "") {
-            viewHolder.wifiName.setText(R.string.noname);
-        } else {*/
-            viewHolder.wifiName.setText(list_filter.get(i).getName());
-        //}
-        String temp_password = list_filter.get(i).getPassword();
-        //没有密码的情况
-        if (temp_password == null) {
-            viewHolder.wifiPassword.setText(R.string.nopassword);
-            viewHolder.wifiPassword.setTextColor(Color.GRAY);
-        } else {
-            viewHolder.wifiPassword.setText(temp_password);
-            viewHolder.wifiPassword.setTextColor(Color.BLACK);
-        }
 
-        Log.d("TAG", "getView: list size: " + this.list.size() + " list_filter size: " + this.list_filter.size());
-        return view;
     }
 
-    static class ViewHolder {
-        private TextView wifiName;
-        private TextView wifiPassword;
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == TYPE_ITEM) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.list_item, parent, false);
+            ItemViewHolder vHolder = new ItemViewHolder(view);
+            view.setOnClickListener(this);
+            return vHolder;
+        } else {
+            View view = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.list_item, parent, false);
+            HeaderViewHolder headerViewHolder = new HeaderViewHolder(view);
+            view.setOnClickListener(this);
+            return headerViewHolder;
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (mItemClickListener != null)
+            mItemClickListener.onItemClick(view, (int)view.getTag());
+    }
+
+    public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
+        this.mItemClickListener = listener;
+    }
+
+    public boolean isShowHeader() {
+        return this.mShowHeader;
+    }
+
+    public void setHeaderWifi(WiFi headerWifi) {
+        this.headerWifi = headerWifi;
+    }
+
+    public void showHeader(boolean showHeader) {
+        this.mShowHeader = showHeader;
+    }
+
+    class ItemViewHolder extends RecyclerView.ViewHolder
+            implements View.OnCreateContextMenuListener {
+        public TextView mName;
+        public TextView mPsd;
+
+        public ItemViewHolder(final View view) {
+            super(view);
+            mName = (TextView)view.findViewById(R.id.item_name);
+            mPsd = (TextView)view.findViewById(R.id.item_password);
+            view.setOnCreateContextMenuListener(this);
+            Log.d("TAG", "menu created");
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu contextMenu, View view,
+                                        ContextMenu.ContextMenuInfo contextMenuInfo) {
+            contextMenu.add(Menu.NONE, R.id.copy_name, Menu.NONE, R.string.copyname);
+            contextMenu.add(Menu.NONE, R.id.copy_password, Menu.NONE, R.string.copypassword);
+            contextMenu.add(Menu.NONE, R.id.copy_all, Menu.NONE, R.string.copyall);
+        }
+    }
+
+    class HeaderViewHolder extends RecyclerView.ViewHolder
+            implements View.OnCreateContextMenuListener {
+        public TextView mName;
+        public TextView mPsd;
+        public ImageView mHeader;
+
+        public HeaderViewHolder(final View view) {
+            super(view);
+            mName = (TextView)view.findViewById(R.id.item_name);
+            mPsd = (TextView)view.findViewById(R.id.item_password);
+            mHeader = (ImageView)view.findViewById(R.id.wifi);
+            mHeader.setVisibility(View.VISIBLE);
+            view.setOnCreateContextMenuListener(this);
+            Log.d("TAG", "menu created");
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu contextMenu, View view,
+                                        ContextMenu.ContextMenuInfo contextMenuInfo) {
+            contextMenu.add(Menu.NONE, R.id.copy_name, Menu.NONE, R.string.copyname);
+            contextMenu.add(Menu.NONE, R.id.copy_password, Menu.NONE, R.string.copypassword);
+            contextMenu.add(Menu.NONE, R.id.copy_all, Menu.NONE, R.string.copyall);
+        }
     }
 
     //搜索
@@ -108,9 +218,14 @@ public class WiFiAdapter extends BaseAdapter implements Filterable {
         return filter;
     }
 
-    /*public int getFilterListSize() {
+    public int getFilterListSize() {
         return list_filter.size();
-    }*/
+    }
+
+    public List<WiFi> getList_filter() {
+        Log.d("TAG", "list_filter again: " + list_filter.size());
+        return this.list_filter;
+    }
 
     //搜索工具类
     public class SearchFilter extends Filter {
@@ -132,6 +247,8 @@ public class WiFiAdapter extends BaseAdapter implements Filterable {
                 filterResults.count = list.size();
                 filterResults.values = list;
             }
+            list_filter = (ArrayList<WiFi>)filterResults.values;
+            Log.d("TAG", "list_filter: " + list_filter.size());
             return filterResults;
         }
 
@@ -139,7 +256,7 @@ public class WiFiAdapter extends BaseAdapter implements Filterable {
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
 
             list_filter = (ArrayList<WiFi>)filterResults.values;
-            Log.d("TAG", "search");
+            Log.d("TAG", "search result num:" + list_filter.size());
 
             notifyDataSetChanged(); //不会改变list的值，显示的是list_filter的值
         }

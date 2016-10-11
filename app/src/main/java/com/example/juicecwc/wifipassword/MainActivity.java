@@ -1,44 +1,35 @@
 package com.example.juicecwc.wifipassword;
 
 import android.annotation.TargetApi;
-import android.app.ListFragment;
-import android.app.SearchManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.provider.SearchRecentSuggestions;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.Filter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.juicecwc.wifipassword.entity.WiFi;
 import com.example.juicecwc.wifipassword.util.MySuggestionProvider;
+import com.example.juicecwc.wifipassword.util.MyWiFiManager;
 import com.example.juicecwc.wifipassword.util.Parser;
 import com.example.juicecwc.wifipassword.util.Root;
 import com.example.juicecwc.wifipassword.util.WiFiAdapter;
@@ -49,9 +40,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,13 +49,12 @@ import java.util.List;
 public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     final String filePath = "cat /data/misc/wifi/wpa_supplicant.conf";
-    private ListView listView;
+    private RecyclerView mRecyclerView;
     private TextView textView;
     private List<WiFi> noPskList;
     private List<WiFi> pskList;
     private List<WiFi> showList;
     private List<WiFi> dataList;
-    //private List<WiFi> noNameList;
     private WiFi wifi_click;
     private WiFiAdapter mWiFiAdapter;
     private Context mContext;
@@ -77,6 +65,9 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
     private String backupParentPath;
     private String backupPath;
     private String out = null; //读出的数据
+    private LinearLayoutManager mLayoutManager;
+    private MyWiFiManager mMyWiFiManager;
+    private WiFi headerWifi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,27 +93,32 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
 
         sharedPreferences = mContext.getSharedPreferences("settings",
                 Context.MODE_PRIVATE);
-        mWiFiAdapter = new WiFiAdapter();
-        listView = (ListView)findViewById(R.id.list);
-        textView = (TextView)findViewById(R.id.text);
+        //mWiFiAdapter = new WiFiAdapter();
 
-        registerForContextMenu(listView);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //单击呼出菜单
-                listView.showContextMenuForChild(view);
-                wifi_click = showList.get(i);
-            }
-        });
+        //RecyclerView相关
+        mRecyclerView = (RecyclerView) findViewById(R.id.list);
+        //如果可以确定每个item的高度是固定的，设置这个选项可以提高性能
+        mRecyclerView.setHasFixedSize(true);
+        //设置点击动画，似乎并没有效果
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        registerForContextMenu(mRecyclerView);
+
+        mLayoutManager = new LinearLayoutManager(mContext);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        textView = (TextView)findViewById(R.id.text);
+        //tv_psd = (TextView)findViewById(tv_psd);
 
         dataList = new ArrayList<>();
         noPskList = new ArrayList<>();
         pskList = new ArrayList<>();
         showList = new ArrayList<>();
         //noNameList = new ArrayList<>();
-        doWork();
 
+        mMyWiFiManager = new MyWiFiManager(mContext);
+        doWork();//获取WiFi密码列表
+        wifiState();//处理WiFi状态
+        flush();//刷新
     }
 
     private void doWork() {
@@ -151,7 +147,12 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
                 //if (dataList.isEmpty())
                     //Log.d("TAG", "datalist is null");
                 //Log.d("TAG", "datalist:" + dataList.toString());
+                String headerName = mMyWiFiManager.getSSID();
+                int length = headerName.length();
+                headerName = headerName.substring(1, length - 1);
                 for (WiFi wifi : dataList) {
+                    if (wifi.getName().equals(headerName))
+                        headerWifi = wifi;
                     if (wifi.getPassword() == null) {
                         noPskList.add(wifi);
                     } /*else if (wifi.getName() == "Sorry, Cannot get WiFi name =_=") {
@@ -159,12 +160,28 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
                         noNameList.add(wifi);
                     }*/ else {
                         pskList.add(wifi);
+                        Log.d("TAG", wifi.getName());
                     }
                 }
 
                 showList = pskList;
+                showList.addAll(noPskList);
                 mWiFiAdapter = new WiFiAdapter(this, showList);
-                listView.setAdapter(mWiFiAdapter);
+                mWiFiAdapter.setHeaderWifi(headerWifi);
+                mRecyclerView.setAdapter(mWiFiAdapter);
+
+                mWiFiAdapter.setOnItemClickListener(new WiFiAdapter.OnRecyclerViewItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int data) {
+                        mRecyclerView.showContextMenuForChild(view);
+                        if (data == -1)
+                            wifi_click = headerWifi;
+                        else
+                            wifi_click = showList.get(data);
+                    }
+                });
+
+                //listView.setAdapter(mWiFiAdapter);
 
                 //flush();
             }
@@ -175,6 +192,69 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
             textView.setText(R.string.noroot);
         }
 
+    }
+
+    private void wifiState() {
+        Log.d("TAG", mMyWiFiManager.getSSID() + mMyWiFiManager.checkState());
+        mWiFiAdapter.showHeader(false);
+        //未打开WiFi
+        if (mMyWiFiManager.checkState() == 1) {
+            Snackbar.make(mRecyclerView, R.string.wificlosed, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.openwifi, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            mMyWiFiManager.openWiFi();
+                        }
+                    }).show();
+        } else if (mMyWiFiManager.getSSID() != null) {
+            mWiFiAdapter.showHeader(true);
+        }
+    }
+
+    //刷新列表
+    public void flush() {
+
+        clear = sharedPreferences.getBoolean("clear", false);
+        if (clear == true) {
+            clearHistory();
+        }
+
+        int sort = sharedPreferences.getInt("sort", 0);
+        pskList.clear();
+        for (WiFi wiFi : dataList) {
+            if (noPskList.contains(wiFi))
+                continue;
+            pskList.add(wiFi);
+        }
+        if (sort == 1) {
+            Collections.sort(pskList);
+            Collections.sort(noPskList);
+            //Log.d("TAG", "sort up");
+        } else if (sort == 2) {
+            Collections.sort(pskList);
+            Collections.sort(noPskList);
+            Collections.reverse(pskList);
+            Collections.reverse(noPskList);
+            //Log.d("TAG", "sort down");
+        }
+        showList = pskList;
+
+        /*boolean flag_show_noname = sharedPreferences.getBoolean("show_noname", false);
+        if (flag_show_noname == true)
+            showList.addAll(noNameList);*/
+
+        boolean flag_show = sharedPreferences.getBoolean("show", false);
+        if (flag_show == true) {
+            showList.addAll(noPskList);
+            //Log.d("TAG", "show all");
+        }
+
+        //mWiFiAdapter.setList(showList);
+        //Log.d("TAG", pskList.toString());
+        mWiFiAdapter.reset();
+        mWiFiAdapter.notifyDataSetChanged(); //只会改变WiFiAdapter里的list的值不会改变list_filter的值
+        Log.d("TAG", "flush");
+        wifiState();
     }
 
     //备份
@@ -250,12 +330,12 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
         return out;
     }
 
-    @Override
+    /*@Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         MenuInflater inflater = new MenuInflater(this);
         inflater.inflate(R.menu.item_click_menu, menu);
         super.onCreateContextMenu(menu, v, menuInfo);
-    }
+    }*/
 
     //点击后弹出菜单
     @Override
@@ -266,6 +346,7 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
         ClipData clipData = null;
         String temp_password = wifi_click.getPassword();
         String temp_name = wifi_click.getName();
+
         if (temp_name.isEmpty())
             Log.d("TAG", "empty");
         /*if (temp_password == null)
@@ -314,19 +395,12 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
 
-        /*// 关联检索配置和SearchView
-        SearchManager searchManager =
-                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView =
-                (SearchView) menu.findItem(R.id.search).getActionView();*/
-        /*searchView.setSearchableInfo(
-                searchManager.getSearchableInfo(getComponentName()));*/
-
         //采用searchView作为搜索UI
         final MenuItem searchItem = menu.findItem(R.id.search);
         searchView = (SearchView)MenuItemCompat.getActionView(searchItem);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            //这段代码在点回车键之后才执行，不点回车键不会执行
             @Override
             public boolean onQueryTextSubmit(String query) {
                 //Toast.makeText(mContext, "查找成功，下拉刷新返回", Toast.LENGTH_SHORT).show();
@@ -336,14 +410,23 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
                     // 这将让键盘在所有的情况下都被隐藏，但是一般我们在点击搜索按钮后，输入法都会乖乖的自动隐藏的。
                     imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0); // 输入法如果是显示状态，那么就隐藏输入法
                 }
+                showList = mWiFiAdapter.getList_filter();
+                Log.d("TAG", "showlist size: " + showList.size());
+                Log.d("TAG", "getCount_out: " + mWiFiAdapter.getItemCount());
                 searchView.clearFocus();
                 return true;
             }
 
+            //先执行这段代码，在一点搜索图标的时候就执行。每次输入搜索内容也会执行，但是还是没用啊啊啊啊，并不会及时更新showList
             @Override
             public boolean onQueryTextChange(String newText) {
                 Log.d("TAG", "Changed");
+
                 doSearch(newText);
+                mRecyclerView.scrollToPosition(0);
+                showList = mWiFiAdapter.getList_filter();
+                Log.d("TAG", "showlist size 2: " + showList.size());
+                Log.d("TAG", "getCount_out 2: " + mWiFiAdapter.getItemCount());
                 return true;
             }
         });
@@ -370,56 +453,19 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
         return super.onOptionsItemSelected(item);
     }
 
-    //刷新列表
-    public void flush() {
-        clear = sharedPreferences.getBoolean("clear", false);
-        if (clear == true) {
-            clearHistory();
-        }
-
-        int sort = sharedPreferences.getInt("sort", 0);
-        pskList.clear();
-        for (WiFi wiFi : dataList) {
-            if (noPskList.contains(wiFi)) // || noNameList.contains(wiFi))
-                continue;
-            pskList.add(wiFi);
-        }
-        if (sort == 1) {
-            Collections.sort(pskList);
-            Collections.sort(noPskList);
-            //Log.d("TAG", "sort up");
-        } else if (sort == 2) {
-            Collections.sort(pskList);
-            Collections.sort(noPskList);
-            Collections.reverse(pskList);
-            Collections.reverse(noPskList);
-            //Log.d("TAG", "sort down");
-        }
-        showList = pskList;
-
-        /*boolean flag_show_noname = sharedPreferences.getBoolean("show_noname", false);
-        if (flag_show_noname == true)
-            showList.addAll(noNameList);*/
-
-        boolean flag_show = sharedPreferences.getBoolean("show", false);
-        if (flag_show == true) {
-            showList.addAll(noPskList);
-            //Log.d("TAG", "show all");
-        }
-
-        //mWiFiAdapter.setList(showList);
-        //Log.d("TAG", pskList.toString());
-        mWiFiAdapter.reset();
-        mWiFiAdapter.notifyDataSetChanged(); //只会改变WiFiAdapter里的list的值不会改变list_filter的值
-        Log.d("TAG", "flush");
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
         //Log.d("TAG", "onResume");
         flush();
     }
+
+   /* @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        wifiState();
+        Log.d("TAG", "onBackPressed");
+    }*/
 
     //沉浸式状态栏
     @TargetApi(19)
@@ -460,34 +506,22 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
         }, 500);
     }
 
-    /*//搜索
-    @Override
-    protected void onNewIntent(Intent intent) {
-        setIntent(intent);
-        String query = handleIntent(intent);
-        doSearch(query);
-    }
-
-    //搜索
-    private String handleIntent(Intent intent) {
-        String query = null;
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            query = intent.getStringExtra(SearchManager.QUERY); //获取用户输入的关键字
-        }
-        return query;
-    }*/
-
     //执行搜索
     private void doSearch(String query) {
 
+        mWiFiAdapter.showHeader(false);//打开搜索之后关闭header
+        Log.d("TAG", "doSearch");
             /*Toast.makeText(this,"the query key is " + query,Toast.LENGTH_LONG).show(); //弹出用户输入的关键字，模拟搜索处理*/
         if (query.isEmpty()) {
-            listView.clearTextFilter();
+            //mRecyclerView.clearTextFilter();
             mWiFiAdapter.reset();
         }
         else {
             mWiFiAdapter.getFilter().filter(query);
-            Log.d("TAG", "getCount_out: " + mWiFiAdapter.getCount());
+            Log.d("TAG", "filter(query): " + showList.size());
+            /*showList = mWiFiAdapter.getList_filter();
+            Log.d("TAG", "showlist size: " + showList.size());
+            Log.d("TAG", "getCount_out: " + mWiFiAdapter.getItemCount());*/
         }
 
         /*//保存搜索记录

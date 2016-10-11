@@ -52,11 +52,11 @@ public class BaseActivity extends AppCompatActivity {
         createVelocityTracker(event);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.d("TAG", "Down");
+                //Log.d("TAG", "Down");
                 xDown = event.getRawX();
                 break;
             case MotionEvent.ACTION_MOVE:
-                Log.d("TAG", "Move");
+                //Log.d("TAG", "Move");
                 xMove = event.getRawX();
                 //活动的距离
                 int distanceX = (int) (xMove - xDown);
@@ -64,7 +64,7 @@ public class BaseActivity extends AppCompatActivity {
                 int xSpeed = getScrollVelocity();
                 //当滑动的距离大于我们设定的最小距离且滑动的瞬间速度大于我们设定的速度时，返回到上一个activity
                 if (distanceX > XDISTANCE_MIN && xSpeed > XSPEED_MIN) {
-                    Log.d("TAG", "Finish");
+                    //Log.d("TAG", "Finish");
                     finish();
                     overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
 
